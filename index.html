@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
+    
+    <title>Demo Login Page</title>
+</head>
+<body>
+    <div class="wrapper" id="wrapper">
+        <section class="s-wrapper flex-class" id="section1">
+            <div class="content flex-class">
+                <div class="container flex-class">
+                    <p class="name">SUN ENTERPRISE Login</p>
+                    <div class="warning" id="login-warning">
+
+                    </div>
+                    <input type="email" name="email" id="login-email" placeholder="Email">
+                    <input type="password" name="password" id="login-password" placeholder="Password">
+                    <button id="login-button">Log In</button>
+                    <div class="forget-password">Forget Password?</div>
+
+                </div>
+                <div class="sub-container flex-class">
+                    <p>Don't have an account?<span id="signup-page-link">Sign Up</span></p>
+                </div>
+            </div>
+    
+        </section>
+
+        <section class="s-wrapper flex-class" id="section2">
+            <div class="content flex-class">
+                <div class="container flex-class">
+                    <p class="name">SUN ENTERPRISE Login</p>
+                    <div class="warning" id="signup-warning">
+
+                    </div>
+                    <input type="email" name="email" id="signup-email" placeholder="Email">
+                    <input type="text" name="name" id="signup-name" placeholder="Full Name">
+                    <input type="password" name="password" id="signup-password" placeholder="Password">
+                    <button id="signup-button" >Sign Up</button>
+                    <div class="forget-password">Forget Password?</div>
+
+                </div>
+                <div class="sub-container flex-class">
+                    <p>Have an account?<span id="login-page-link">Log In</span></p>
+                </div>
+            </div>
+    
+        </section>
+    </div>
+    <section class="loged-in s-wrapper flex-class" id="section2">
+        <div class="content flex-class">
+            <div class="container flex-class">
+                
+                <button id="signout-button" >Sign Out</button>
+                
+            </div>
+            
+        </div>
+
+    </section>
+    
+    <script>
+
+    const signUpPageLink = document.querySelector('#signup-page-link');
+    const loginPageLink = document.querySelector('#login-page-link');
+    const wrapper = document.querySelector('.wrapper');
+
+    const signUpButton = document.querySelector('#signup-button');
+    const signUpEmail = document.querySelector('#signup-email');
+    const signUpPassword = document.querySelector('#signup-password');
+    const signUpName = document.querySelector('#signup-name');
+
+    const loginButton = document.querySelector('#login-button');
+    const loginEmail = document.querySelector('#login-email');
+    const loginPassword = document.querySelector('#login-password');
+    const loginName = document.querySelector('#login-name');
+
+    const signOutButton = document.querySelector('#signout-button');
+
+    const signUpWarning = document.querySelector('#signup-warning');
+    const loginWarning = document.querySelector('#login-warning');
+
+
+    loginPassword.addEventListener('input', checkLogInButton);
+    signUpPassword.addEventListener('input', checkSignUpButton);
+
+    loginEmail.addEventListener('input', checkLogInButton);
+    signUpEmail.addEventListener('input', checkSignUpButton);
+    signUpName.addEventListener('input', checkSignUpButton);
+
+
+
+    function checkLogInButton(){
+        if(loginPassword.value.length >= 6 && loginEmail.value!=""){
+             loginButton.style.backgroundColor = "#0095f6"
+        }
+        else{
+            loginButton.style.backgroundColor = "#bcdffc"
+
+        }
+    }
+
+
+    function checkSignUpButton(){
+        if(signUpPassword.value.length >= 6 && signUpEmail.value!="" && signUpName.value!=''){
+             signUpButton.style.backgroundColor = "#0095f6"
+        }
+        else{
+            signUpButton.style.backgroundColor = "#bcdffc"
+
+        }
+    }
+
+
+
+
+
+    
+
+    // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyBzjpljktEH4Lhw-HzTi8RdLkhxHjzJQQo",
+    authDomain: "form-d2372.firebaseapp.com",
+    projectId: "form-d2372",
+    storageBucket: "form-d2372.appspot.com",
+    messagingSenderId: "217486279163",
+    appId: "1:217486279163:web:0e93db48b8e7b33e140b5e",
+    measurementId: "G-HTLJYTYGC8"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  const auth =  firebase.auth();
+
+
+
+  signUpPageLink.addEventListener('click', function(){
+        wrapper.style.top = '-100%';
+    
+    })
+
+    loginPageLink.addEventListener('click', function(){
+        wrapper.style.top = '0%';
+    })
+
+
+    signUpButton.addEventListener('click', function(){
+        signUpButton.innerText = 'Signed Up!!'
+        auth.createUserWithEmailAndPassword(signUpEmail.value, signUpPassword.value)
+        .then((userCredential)=>{
+            signUpButton.innerText = 'Sign Up'
+            var currentUser = auth.currentUser;
+            currentUser.updateProfile({
+                displayName:signUpName.value,
+            })
+           
+        })
+        .catch((e)=>{
+            signUpButton.innerText = 'Sign Up'
+            signUpWarning.innerText = e.message;
+            
+        })
+    })
+
+    loginButton.addEventListener('click', function(){
+        loginButton.innerText = 'Signing in';
+        auth.signInWithEmailAndPassword(loginEmail.value, loginPassword.value)
+        .then((e)=>{
+            loginButton.innerText = 'Log In';
+        })
+        
+        .catch((e)=>{
+            
+            loginButton.innerText = 'Log In';
+            loginWarning.innerText = e.message;
+
+        })
+    })
+
+    signOutButton.addEventListener('click', function(){
+        auth.signOut();
+    })
+
+    auth.onAuthStateChanged((user)=>{
+        wrapper.style.top = '0';
+        loginPassword.value = '';
+        loginEmail.value = '';
+        signUpPassword.value = '';
+        signUpEmail.value = '';
+        if(user){
+            wrapper.style.display = 'none'
+        }
+        else{
+            wrapper.style.display = 'block';
+        }
+    })
+
+ 
+
+
+  
+
+        
+</script>
+
+
+    
+</body>
+</html>
