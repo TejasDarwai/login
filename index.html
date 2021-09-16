@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
     
     <title>Demo Login Page</title>
 </head>
@@ -42,6 +42,7 @@
                     <input type="email" name="email" id="signup-email" placeholder="Email">
                     <input type="text" name="name" id="signup-name" placeholder="Full Name">
                     <input type="password" name="password" id="signup-password" placeholder="Password">
+                    <input type="password" name="repassword" id="reenter-signup-password" placeholder="Re-Enter Password">
                     <button id="signup-button" >Sign Up</button>
                     <div class="forget-password">Forget Password?</div>
 
@@ -56,7 +57,8 @@
     <section class="loged-in s-wrapper flex-class" id="section2">
         <div class="content flex-class">
             <div class="container flex-class">
-                
+                <h1>Welcome!!</h1>
+                <h1>SUN ENTERPRISE</h1>
                 <button id="signout-button" >Sign Out</button>
                 
             </div>
@@ -74,6 +76,7 @@
     const signUpButton = document.querySelector('#signup-button');
     const signUpEmail = document.querySelector('#signup-email');
     const signUpPassword = document.querySelector('#signup-password');
+    const reenterSignUpPassword = document.querySelector('#reenter-signup-password');
     const signUpName = document.querySelector('#signup-name');
 
     const loginButton = document.querySelector('#login-button');
@@ -93,6 +96,7 @@
     loginEmail.addEventListener('input', checkLogInButton);
     signUpEmail.addEventListener('input', checkSignUpButton);
     signUpName.addEventListener('input', checkSignUpButton);
+    reenterSignUpPassword.addEventListener('input', checkSignUpButton)
 
 
 
@@ -108,7 +112,7 @@
 
 
     function checkSignUpButton(){
-        if(signUpPassword.value.length >= 6 && signUpEmail.value!="" && signUpName.value!=''){
+        if(signUpPassword.value.length >= 6 && reenterSignUpPassword.value.length >=6  && signUpEmail.value!="" && signUpName.value!='' ){
              signUpButton.style.backgroundColor = "#0095f6"
         }
         else{
@@ -152,7 +156,9 @@
 
 
     signUpButton.addEventListener('click', function(){
-        signUpButton.innerText = 'Signed Up!!'
+        if(reenterSignUpPassword.value == signUpPassword.value ){
+
+        signUpButton.innerText = 'Signed Up'
         auth.createUserWithEmailAndPassword(signUpEmail.value, signUpPassword.value)
         .then((userCredential)=>{
             signUpButton.innerText = 'Sign Up'
@@ -167,7 +173,17 @@
             signUpWarning.innerText = e.message;
             
         })
+        }
+        if(reenterSignUpPassword.value != signUpPassword.value ){
+            signUpWarning.innerText = 'Your Password is not Matching, Re-Enter Correct Password';
+
+        }
+
+        
     })
+
+
+    
 
     loginButton.addEventListener('click', function(){
         loginButton.innerText = 'Signing in';
@@ -193,9 +209,12 @@
         loginPassword.value = '';
         loginEmail.value = '';
         signUpPassword.value = '';
+        reenterSignUpPassword.value = '';
         signUpEmail.value = '';
         if(user){
             wrapper.style.display = 'none'
+            signOutButton.style.backgroundColor = "#0095f6"
+
         }
         else{
             wrapper.style.display = 'block';
